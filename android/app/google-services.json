@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "278496793189",
+    "project_id": "ludoboard-186a0",
+    "storage_bucket": "ludoboard-186a0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:278496793189:android:33d04202f529d398a66c8c",
+        "android_client_info": {
+          "package_name": "com.techskyway.ludo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD7i8J7EgkP4iZLltFDBDCLKgAbelqPtcY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:278496793189:android:f2e7359faf187db7a66c8c",
+        "android_client_info": {
+          "package_name": "com.techskyway.ludoboard"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD7i8J7EgkP4iZLltFDBDCLKgAbelqPtcY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
