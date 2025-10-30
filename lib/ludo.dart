@@ -185,6 +185,7 @@ class Ludo extends FlameGame
             LudoDice(
               player: GameState().players[GameState().currentPlayerIndex],
               faceSize: leftDice.size.x * 0.70,
+              driveGameLogic: true,
             ),
           );
           // upperController.showPointer(player.playerId);
@@ -241,10 +242,19 @@ class Ludo extends FlameGame
     homePlate.add(shouldBlink ? _yellowBlinkEffect! : _yellowStaticEffect!);
 
     if (shouldBlink) {
-      final player = GameState().players[GameState().currentPlayerIndex];
-      rightDiceContainer.add(
-        LudoDice(player: player, faceSize: rightDice.size.x * 0.70),
-      );
+      final existingDice = rightDiceContainer.children
+          .whereType<LudoDice>()
+          .firstOrNull;
+      if (existingDice == null) {
+        final player = GameState().players[GameState().currentPlayerIndex];
+        rightDiceContainer.add(
+          LudoDice(
+            player: player,
+            faceSize: rightDice.size.x * 0.70,
+            driveGameLogic: true,
+          ),
+        );
+      }
       // lowerController.showPointer(player.playerId);
     } else {
       final ludoDice = rightDiceContainer.children
@@ -305,7 +315,11 @@ class Ludo extends FlameGame
         if (GameState().players.isNotEmpty) {
           final player = GameState().players[GameState().currentPlayerIndex];
           leftDiceContainer.add(
-            LudoDice(player: player, faceSize: leftDice.size.x * 0.70),
+            LudoDice(
+              player: player,
+              faceSize: leftDice.size.x * 0.70,
+              driveGameLogic: true,
+            ),
           );
           // lowerController.showPointer(player.playerId);
         }
@@ -362,13 +376,19 @@ class Ludo extends FlameGame
     homePlate.add(shouldBlink ? _greenBlinkEffect! : _greenStaticEffect!);
 
     if (shouldBlink) {
-      final player = GameState().players[GameState().currentPlayerIndex];
-      rightDiceContainer.add(
-        LudoDice(
-          player: GameState().players[GameState().currentPlayerIndex],
-          faceSize: rightDice.size.x * 0.70,
-        ),
-      );
+      final existingDice = rightDiceContainer.children
+          .whereType<LudoDice>()
+          .firstOrNull;
+      if (existingDice == null) {
+        final player = GameState().players[GameState().currentPlayerIndex];
+        rightDiceContainer.add(
+          LudoDice(
+            player: player,
+            faceSize: rightDice.size.x * 0.70,
+            driveGameLogic: true,
+          ),
+        );
+      }
       // upperController.showPointer(player.playerId);
     } else {
       final ludoDice = rightDiceContainer.children
@@ -456,7 +476,11 @@ class Ludo extends FlameGame
                   .first;
 
               leftDiceContainer.add(
-                LudoDice(player: bluePlayer, faceSize: leftDice.size.x * 0.70),
+                LudoDice(
+                  player: bluePlayer,
+                  faceSize: leftDice.size.x * 0.70,
+                  driveGameLogic: true,
+                ),
               );
               // lowerController.showPointer(bluePlayer.playerId);
             }
@@ -606,6 +630,7 @@ class Ludo extends FlameGame
                 LudoDice(
                   player: yellowPlayer,
                   faceSize: rightDice.size.x * 0.70,
+                  driveGameLogic: true,
                 ),
               );
             }
@@ -690,7 +715,11 @@ class Ludo extends FlameGame
                   .whereType<RectangleComponent>()
                   .first;
               rightDiceContainer.add(
-                LudoDice(player: redPlayer, faceSize: leftDice.size.x * 0.70),
+                LudoDice(
+                  player: redPlayer,
+                  faceSize: leftDice.size.x * 0.70,
+                  driveGameLogic: true,
+                ),
               );
             }
 

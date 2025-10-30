@@ -7,11 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:flame/geometry.dart';
 // user files
 import 'dice_face_component.dart';
+import '../../state/dice_state.dart';
 import '../../state/game_state.dart';
 import '../../state/audio_manager.dart';
 import '../../state/player.dart';
 import '../../ludo_board.dart';
-import '../controller/lower_controller.dart';
+import '../../service/dice_sync_manager.dart';
 import 'token.dart';
 import '../../ludo.dart';
 
@@ -31,6 +32,10 @@ class LudoDice extends PositionComponent with TapCallbacks {
   late final DiceFaceComponent diceFace; // The dice face showing dots
 
   final Player player;
+  final bool driveGameLogic;
+
+  StreamSubscription<DiceState>? _diceSubscription;
+  int? _lastHandledNonce;
 
   void playSound() async {
     await AudioManager.playDiceSound();
@@ -38,38 +43,28 @@ class LudoDice extends PositionComponent with TapCallbacks {
 
   @override
   void onTapDown(TapDownEvent event) async {
+    if (!driveGameLogic) return;
+
     if (!player.enableDice ||
         !player.isCurrentTurn ||
         player != GameState().currentPlayer) {
       return; // Exit if the player cannot roll the dice
     }
 
-    // Disable dice to prevent multiple taps
-    final world = parent?.parent?.parent?.parent?.parent;
     GameState().hidePointer();
     player.enableDice = false;
 
-    // Roll the dice and update the dice face
-    GameState().diceNumber = Random().nextInt(6) + 1;
-    diceFace.updateDiceValue(GameState().diceNumber);
+    final rollValue = Random().nextInt(6) + 1;
 
-    // playSound();
-    // Apply dice rotation effect
-    _applyDiceRollEffect();
-
-    await Future.delayed(const Duration(milliseconds: 300));
-
-    if (world is! World) return; // Ensure the world is available
-
-    // Handle dice roll based on the number
-    final handleRoll = GameState().diceNumber == 6
-        ? _handleSixRoll
-        : _handleNonSixRoll;
-    handleRoll(
-      world,
-      GameState().ludoBoard as LudoBoard,
-      GameState().diceNumber,
-    );
+    try {
+      await DiceSyncManager().publishRoll(
+        rolledBy: player.playerId,
+        value: rollValue,
+      );
+    } catch (error) {
+      player.enableDice = true;
+      debugPrint('Failed to sync dice roll: $error');
+    }
   }
 
   // Apply a 360-degree rotation effect to the dice
@@ -84,6 +79,46 @@ class LudoDice extends PositionComponent with TapCallbacks {
       ),
     );
     return Future.value();
+  }
+
+  @override
+  void onMount() {
+    super.onMount();
+    _diceSubscription =
+        DiceSyncManager().diceStream.listen(_handleSyncedRoll);
+  }
+
+  @override
+  void onRemove() {
+    _diceSubscription?.cancel();
+    _diceSubscription = null;
+    super.onRemove();
+  }
+
+  Future<void> _handleSyncedRoll(DiceState state) async {
+    if (state.rolledBy == null || state.rolledBy != player.playerId) return;
+    if (_lastHandledNonce != null && _lastHandledNonce == state.nonce) return;
+    _lastHandledNonce = state.nonce;
+
+    diceFace.updateDiceValue(state.value);
+
+    if (!driveGameLogic) return;
+
+    GameState().hidePointer();
+    player.enableDice = false;
+    _applyDiceRollEffect();
+
+    await Future.delayed(const Duration(milliseconds: 300));
+
+    final world = parent?.parent?.parent?.parent?.parent;
+    if (world is! World) return;
+
+    final ludoBoard = GameState().ludoBoard;
+    if (ludoBoard is! LudoBoard) return;
+
+    final handleRoll =
+        state.value == 6 ? _handleSixRoll : _handleNonSixRoll;
+    handleRoll(world, ludoBoard, state.value);
   }
 
   // Handle logic when the player rolls a 6
@@ -209,7 +244,11 @@ class LudoDice extends PositionComponent with TapCallbacks {
     );
   }
 
-  LudoDice({required this.faceSize, required this.player}) {
+  LudoDice({
+    required this.faceSize,
+    required this.player,
+    this.driveGameLogic = false,
+  }) {
     // Pre-calculate values to avoid repeated calculations
     final double borderRadiusValue = faceSize * borderRadiusFactor;
     final double innerWidth = faceSize * innerSizeFactor;
@@ -232,7 +271,10 @@ class LudoDice extends PositionComponent with TapCallbacks {
     anchor = Anchor.center;
 
     // Initialize the dice face component
-    diceFace = DiceFaceComponent(faceSize: innerWidth, diceValue: 6);
+    diceFace = DiceFaceComponent(
+      faceSize: innerWidth,
+      diceValue: GameState().diceNumber,
+    );
 
     // Initialize the inner rectangle component
     final innerRectangle = RoundedRectangle(

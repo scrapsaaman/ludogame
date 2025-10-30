@@ -29,7 +29,9 @@ class Player {
 
   // Helper method to get the tokens that are on the board
   List<Token> getTokensOnBoard() {
-    _cachedTokensOnBoard ??= tokens.where((token) => token.isOnBoard()).toList();
+    _cachedTokensOnBoard ??= tokens
+        .where((token) => token.isOnBoard())
+        .toList();
     return _cachedTokensOnBoard!;
   }
 
@@ -46,7 +48,7 @@ class Player {
   // Method to reset extra turns (including after three consecutive sixes)
   Future<void> resetExtraTurns() async {
     extraTurns = 0;
-    _cachedTokensOnBoard = null; 
+    _cachedTokensOnBoard = null;
     return Future.value();
   }
 
@@ -62,4 +64,28 @@ class Player {
   }
 
   List<Token>? _cachedTokensOnBoard; // Define the variable
+
+  Map<String, dynamic> toJson() => {
+    'playerId': playerId,
+    'tokens': tokens.map((t) => t.toJson()).toList(),
+    'isCurrentTurn': isCurrentTurn,
+    'rank': rank,
+    'totalTokensInHome': totalTokensInHome,
+    'hasWon': hasWon,
+    'extraTurns': extraTurns,
+    'enableDice': enableDice,
+  };
+
+  factory Player.fromJson(Map<String, dynamic> json) => Player(
+    playerId: json['playerId'] as String,
+    tokens: ((json['tokens'] as List?) ?? [])
+        .map((e) => Token.fromJson(Map<String, dynamic>.from(e as Map)))
+        .toList(),
+    isCurrentTurn: (json['isCurrentTurn'] as bool?) ?? false,
+    rank: (json['rank'] as num?)?.toInt() ?? 0,
+    totalTokensInHome: (json['totalTokensInHome'] as num?)?.toInt() ?? 0,
+    hasWon: (json['hasWon'] as bool?) ?? false,
+    extraTurns: (json['extraTurns'] as num?)?.toInt() ?? 0,
+    enableDice: (json['enableDice'] as bool?) ?? false,
+  );
 }

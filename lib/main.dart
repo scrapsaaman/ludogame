@@ -5,17 +5,28 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
+// import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
+import 'package:ludogame/auth/firebase_auth_manager.dart';
+import 'package:ludogame/ludo.dart';
+import 'package:ludogame/service/dice_sync_manager.dart';
+import 'package:ludogame/state/game_state.dart';
 // user files
 
 import 'firebase_options.dart';
-import 'ludo.dart';
+// import 'ludo.dart';
+
+const String _defaultGameId = 'demo-shared-game';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  // on save
+
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  FirebaseAuthManager authManager = FirebaseAuthManager();
+  await authManager.signInAnonymously();
+
   runApp(const MyApp());
 }
 
@@ -27,7 +38,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       // home: FirstScreen(),
-      home: GameApp(selectedTeams: ['BP', 'RP', 'GP', 'YP']),
+      home: GameApp(
+        selectedTeams: ['BP', 'RP', 'GP', 'YP'],
+        gameId: _defaultGameId,
+      ),
     );
   }
 }
@@ -118,6 +132,7 @@ class FirstScreenState extends State<FirstScreen> {
                         MaterialPageRoute(
                           builder: (context) => const GameApp(
                             selectedTeams: ['BP', 'RP', 'GP', 'YP'],
+                            gameId: _defaultGameId,
                           ),
                         ),
                       );
@@ -184,6 +199,7 @@ class SecondScreenState extends State<SecondScreen> {
                                 MaterialPageRoute(
                                   builder: (context) => const GameApp(
                                     selectedTeams: ['BP', 'GP'],
+                                    gameId: _defaultGameId,
                                   ),
                                 ),
                               );
@@ -233,6 +249,7 @@ class SecondScreenState extends State<SecondScreen> {
                                 MaterialPageRoute(
                                   builder: (context) => const GameApp(
                                     selectedTeams: ['RP', 'YP'],
+                                    gameId: _defaultGameId,
                                   ),
                                 ),
                               );
@@ -271,8 +288,10 @@ class SecondScreenState extends State<SecondScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              GameApp(selectedTeams: selectedTeams),
+                          builder: (context) => GameApp(
+                            selectedTeams: selectedTeams,
+                            gameId: _defaultGameId,
+                          ),
                         ),
                       );
                     },
@@ -291,8 +310,13 @@ class SecondScreenState extends State<SecondScreen> {
 
 class GameApp extends StatefulWidget {
   final List<String> selectedTeams;
+  final String gameId;
 
-  const GameApp({super.key, required this.selectedTeams});
+  const GameApp({
+    super.key,
+    required this.selectedTeams,
+    this.gameId = _defaultGameId,
+  });
 
   @override
   State<GameApp> createState() => _GameAppState();
@@ -304,6 +328,9 @@ class _GameAppState extends State<GameApp> {
   @override
   void initState() {
     super.initState();
+    final gameId = widget.gameId;
+    GameState().setGameId(gameId);
+    DiceSyncManager().start(gameId: gameId);
     game = Ludo(widget.selectedTeams, context); // Initialize game instance
   }
 

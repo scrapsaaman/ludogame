@@ -2,10 +2,12 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flutter/material.dart';
 import 'package:ludogame/ludo.dart';
+
 import 'dart:math';
 
 import 'package:ludogame/state/game_state.dart';
 import 'package:ludogame/state/token_manager.dart';
+
 
 enum TokenState { inBase, onBoard, inHome }
 
@@ -214,5 +216,95 @@ class Token extends PositionComponent with TapCallbacks {
     final index = tokenPath.indexOf(positionId);
     final newIndex = index + GameState().diceNumber;
     return newIndex < tokenPath.length;
+  }
+
+  Map<String, dynamic> toJson() => {
+        'tokenId': tokenId,
+        'playerId': playerId,
+        'enableToken': enableToken,
+        'positionId': positionId,
+        'state': _stateToWire(state),
+        'topColor': topColor.value,  // ARGB int
+        'sideColor': sideColor.value,
+        'position': _vecToJson(position),
+        'size': _vecToJson(size),
+      };
+
+  static Token fromJson(Map<String, dynamic> json) {
+    final pos = _vecFromJson(json['position']) ?? Vector2.zero();
+    final siz = _vecFromJson(json['size']) ?? Vector2.all(40); // sensible default
+
+    return Token(
+      tokenId: json['tokenId'] as String,
+      playerId: json['playerId'] as String,
+      enableToken: (json['enableToken'] as bool?) ?? false,
+      positionId: (json['positionId'] as String?) ?? '',
+      state: _stateFromWire(json['state']) ?? TokenState.inBase,
+      topColor: Color((json['topColor'] as num?)?.toInt() ?? Colors.white.value),
+      sideColor: Color((json['sideColor'] as num?)?.toInt() ?? Colors.black.value),
+      position: pos,
+      size: siz,
+    );
+  }
+
+  Token copyWith({
+    String? tokenId,
+    String? playerId,
+    bool? enableToken,
+    String? positionId,
+    TokenState? state,
+    Color? topColor,
+    Color? sideColor,
+    Vector2? position,
+    Vector2? size,
+  }) {
+    return Token(
+      tokenId: tokenId ?? this.tokenId,
+      playerId: playerId ?? this.playerId,
+      enableToken: enableToken ?? this.enableToken,
+      positionId: positionId ?? this.positionId,
+      state: state ?? this.state,
+      topColor: topColor ?? this.topColor,
+      sideColor: sideColor ?? this.sideColor,
+      position: position ?? this.position.clone(),
+      size: size ?? this.size.clone(),
+    );
+  }
+
+  // ----- wire helpers -----
+  static String _stateToWire(TokenState s) {
+    switch (s) {
+      case TokenState.inBase:
+        return 'inBase';
+      case TokenState.onBoard:
+        return 'onBoard';
+      case TokenState.inHome:
+        return 'inHome';
+    }
+  }
+
+  static TokenState? _stateFromWire(dynamic v) {
+    if (v is String) {
+      switch (v) {
+        case 'inBase':
+          return TokenState.inBase;
+        case 'onBoard':
+          return TokenState.onBoard;
+        case 'inHome':
+          return TokenState.inHome;
+      }
+    }
+    return null;
+  }
+
+  static Map<String, dynamic> _vecToJson(Vector2 v) => {'x': v.x, 'y': v.y};
+
+  static Vector2? _vecFromJson(dynamic v) {
+    if (v is Map) {
+      final x = (v['x'] as num?)?.toDouble();
+      final y = (v['y'] as num?)?.toDouble();
+      if (x != null && y != null) return Vector2(x, y);
+    }
+    return null;
   }
 }

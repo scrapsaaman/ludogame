@@ -61,11 +61,11 @@ class Spot extends RectangleComponent {
     required Paint paint,
     List<Component>? children,
   }) : super(
-          position: position,
-          size: size,
-          paint: paint,
-          children: children ?? [],
-        ) {
+         position: position,
+         size: size,
+         paint: paint,
+         children: children ?? [],
+       ) {
     SpotManager().addSpot(this);
   }
 
@@ -77,7 +77,8 @@ class Spot extends RectangleComponent {
     final spotGlobalPosition = absolutePositionOf(Vector2.zero());
     final ludoBoardGlobalPosition = GameState().ludoBoardAbsolutePosition;
     tokenPosition = Vector2(
-        spotGlobalPosition.x + tokenSizeAdjustmentX - ludoBoardGlobalPosition.x,
-        spotGlobalPosition.y - tokenSizeAdjustmentY - ludoBoardGlobalPosition.y);
+      spotGlobalPosition.x + tokenSizeAdjustmentX - ludoBoardGlobalPosition.x,
+      spotGlobalPosition.y - tokenSizeAdjustmentY - ludoBoardGlobalPosition.y,
+    );
   }
 }

@@ -2,9 +2,9 @@ import 'dart:async';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flutter/material.dart';
+import 'package:ludogame/main.dart';
 
 import '../../state/player.dart';
-import '../../main.dart';
 
 class RankModalComponent extends PositionComponent with TapCallbacks {
   final List<Player> players;
@@ -50,15 +50,18 @@ class RankModalComponent extends PositionComponent with TapCallbacks {
       final rectangleWidth = size.x * 0.8;
       const rectangleHeight = 40.0; // Set a fixed height for the rectangle
 
-      final backgroundColor =
-          index == 0 ? const Color(0xff08C2FF) : const Color(0xff006BFF);
+      final backgroundColor = index == 0
+          ? const Color(0xff08C2FF)
+          : const Color(0xff006BFF);
 
       // Create the rectangle component
       var playerRectangle = RectangleComponent(
         size: Vector2(rectangleWidth, rectangleHeight),
         paint: Paint()..color = backgroundColor,
         position: Vector2(
-            (size.x - rectangleWidth) / 2, yOffset), // Center horizontally
+          (size.x - rectangleWidth) / 2,
+          yOffset,
+        ), // Center horizontally
       );
 
       // Create the text components for the rank and suffix

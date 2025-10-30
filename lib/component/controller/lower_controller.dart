@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flame/effects.dart';
 import '../../ludo.dart';
 import '../../state/game_state.dart';
-import '../../component/ui_components/dice_pointer.dart';
+import '../ui_components/dice_pointer.dart';
 
 // user files
 import 'controller_block.dart';

@@ -1,7 +1,6 @@
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:ludogame/state/game_state.dart';
-import 'package:ludogame/state/game_state.dart';
 // user files
 import 'component/grid_component/red_grid_component.dart';
 import 'component/grid_component/yellow_grid_component.dart';
