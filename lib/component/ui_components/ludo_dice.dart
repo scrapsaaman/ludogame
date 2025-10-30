@@ -118,11 +118,15 @@ class LudoDice extends PositionComponent with TapCallbacks {
 
     final handleRoll =
         state.value == 6 ? _handleSixRoll : _handleNonSixRoll;
-    handleRoll(world, ludoBoard, state.value);
+    await handleRoll(world, ludoBoard, state.value);
   }
 
   // Handle logic when the player rolls a 6
-  void _handleSixRoll(World world, LudoBoard ludoBoard, int diceNumber) {
+  Future<void> _handleSixRoll(
+    World world,
+    LudoBoard ludoBoard,
+    int diceNumber,
+  ) async {
     player.grantAnotherTurn();
 
     if (player.hasRolledThreeConsecutiveSixes()) {
@@ -147,13 +151,13 @@ class LudoDice extends PositionComponent with TapCallbacks {
     // if only one token can move, move it
     if (allMovableTokens.length == 1) {
       if (allMovableTokens.first.state == TokenState.inBase) {
-        moveOutOfBase(
+        await moveOutOfBase(
           world: world,
           token: allMovableTokens.first,
           tokenPath: GameState().getTokenPath(player.playerId),
         );
       } else if (allMovableTokens.first.state == TokenState.onBoard) {
-        _moveForwardSingleToken(
+        await _moveForwardSingleToken(
           world,
           ludoBoard,
           diceNumber,
@@ -170,7 +174,11 @@ class LudoDice extends PositionComponent with TapCallbacks {
   }
 
   // Handle logic for non-six dice rolls
-  void _handleNonSixRoll(World world, LudoBoard ludoBoard, int diceNumber) {
+  Future<void> _handleNonSixRoll(
+    World world,
+    LudoBoard ludoBoard,
+    int diceNumber,
+  ) async {
     final tokensOnBoard = player.tokens
         .where((token) => token.state == TokenState.onBoard)
         .toList();
@@ -190,7 +198,7 @@ class LudoDice extends PositionComponent with TapCallbacks {
 
     // if only one token can move, move it
     if (movableTokens.length == 1) {
-      _moveForwardSingleToken(
+      await _moveForwardSingleToken(
         world,
         ludoBoard,
         diceNumber,
@@ -230,13 +238,13 @@ class LudoDice extends PositionComponent with TapCallbacks {
   }
 
   // Move the token forward on the board
-  void _moveForwardSingleToken(
+  Future<void> _moveForwardSingleToken(
     World world,
     LudoBoard ludoBoard,
     int diceNumber,
     Token token,
-  ) {
-    moveForward(
+  ) async {
+    await moveForward(
       world: world,
       token: token,
       tokenPath: GameState().getTokenPath(player.playerId),

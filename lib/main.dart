@@ -11,6 +11,7 @@ import 'package:ludogame/auth/firebase_auth_manager.dart';
 import 'package:ludogame/ludo.dart';
 import 'package:ludogame/service/dice_sync_manager.dart';
 import 'package:ludogame/state/game_state.dart';
+import 'package:ludogame/service/token_sync_manager.dart';
 // user files
 
 import 'firebase_options.dart';
@@ -331,7 +332,15 @@ class _GameAppState extends State<GameApp> {
     final gameId = widget.gameId;
     GameState().setGameId(gameId);
     DiceSyncManager().start(gameId: gameId);
+    TokenSyncManager().start(gameId: gameId);
     game = Ludo(widget.selectedTeams, context); // Initialize game instance
+  }
+
+  @override
+  void dispose() {
+    DiceSyncManager().stop();
+    TokenSyncManager().stop();
+    super.dispose();
   }
 
   @override

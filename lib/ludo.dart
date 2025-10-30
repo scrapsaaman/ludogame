@@ -22,6 +22,7 @@ import 'component/ui_components/token.dart';
 import 'component/ui_components/spot.dart';
 import 'component/ui_components/ludo_dice.dart';
 import 'component/ui_components/rank_modal_component.dart';
+import 'service/token_sync_manager.dart';
 
 class Ludo extends FlameGame
     with HasCollisionDetection, KeyboardEvents, TapDetector {
@@ -738,6 +739,8 @@ class Ludo extends FlameGame
         }
       }
     }
+
+    await TokenSyncManager().ensureInitialTokens();
     return Future.value();
   }
 
@@ -772,7 +775,7 @@ List<Component> getHomeSpot(world, i) {
   return homeSpotList;
 }
 
-void moveOutOfBase({
+Future<void> moveOutOfBase({
   required World world,
   required Token token,
   required List<String> tokenPath,
@@ -789,10 +792,10 @@ void moveOutOfBase({
     ),
   );
 
-  tokenCollision(world, token);
+  await tokenCollision(world, token);
 }
 
-void tokenCollision(World world, Token attackerToken) async {
+Future<void> tokenCollision(World world, Token attackerToken) async {
   final tokensOnSpot = TokenManager().allTokens
       .where((token) => token.positionId == attackerToken.positionId)
       .toList();
@@ -864,10 +867,10 @@ void tokenCollision(World world, Token attackerToken) async {
   }
 
   // Call the function to resize tokens after moveBackward is complete
-  resizeTokensOnSpot(world);
+  await resizeTokensOnSpot(world);
 }
 
-void resizeTokensOnSpot(World world) {
+Future<void> resizeTokensOnSpot(World world) async {
   final positionIncrements = {1: 0, 2: 10, 3: 5};
 
   // Group tokens by position ID
@@ -900,6 +903,8 @@ void resizeTokensOnSpot(World world) {
       }
     }
   });
+
+  await TokenSyncManager().syncTokensFromLocal();
 }
 
 void addTokenTrail(List<Token> tokensInBase, List<Token> tokensOnBoard) {
@@ -1021,9 +1026,9 @@ Future<void> moveForward({
   bool isTokenInHome = await checkTokenInHomeAndHandle(token, world);
 
   if (isTokenInHome) {
-    resizeTokensOnSpot(world);
+    await resizeTokensOnSpot(world);
   } else {
-    tokenCollision(world, token);
+    await tokenCollision(world, token);
   }
   clearTokenTrail();
 }

@@ -184,14 +184,14 @@ class Token extends PositionComponent with TapCallbacks {
 
     if (GameState().diceNumber == 6) {
       if (state == TokenState.inBase && GameState().canMoveTokenFromBase) {
-        moveOutOfBase(
+        await moveOutOfBase(
           world: world,
           token: this,
           tokenPath: GameState().getTokenPath(playerId),
         );
       } else if (state == TokenState.onBoard &&
           GameState().canMoveTokenOnBoard) {
-        moveForward(
+        await moveForward(
           world: world,
           token: this,
           tokenPath: GameState().getTokenPath(playerId),
@@ -202,7 +202,7 @@ class Token extends PositionComponent with TapCallbacks {
     }
 
     if (state == TokenState.onBoard && GameState().canMoveTokenOnBoard) {
-      moveForward(
+      await moveForward(
         world: world,
         token: this,
         tokenPath: GameState().getTokenPath(playerId),
