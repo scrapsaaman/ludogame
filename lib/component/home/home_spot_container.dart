@@ -9,10 +9,10 @@ class HomeSpotContainer extends RectangleComponent {
     required Paint homeSpotColor,
     required double radius,
   }) : super(
-          size: Vector2.all(size),
-          position: position,
-          paint: Paint()..color = Colors.transparent,
-        ) {
+         size: Vector2.all(size),
+         position: position,
+         paint: Paint()..color = Colors.transparent,
+       ) {
     _createHomeSpots(homeSpotColor, radius);
   }
 

@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 
@@ -11,8 +13,11 @@ class GameState {
   // Singleton instance
   static final GameState _instance = GameState._();
 
-  List<int> diceChances =
-      List.filled(3, 0, growable: false); // Track consecutive 6s
+  List<int> diceChances = List.filled(
+    3,
+    0,
+    growable: false,
+  ); // Track consecutive 6s
   var diceNumber = 5;
 
   List<Player> players = [];

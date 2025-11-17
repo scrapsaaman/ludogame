@@ -2,6 +2,7 @@
 
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
+import 'package:ludogame/consts.dart';
 import 'package:ludogame/state/game_state.dart';
 import '../ui_components/spot.dart'; // Replace with the actual path to your Spot component
 import '../ui_components/arrow_icon_component.dart'; // Replace with the actual path to ArrowIconComponent
@@ -31,6 +32,8 @@ class RedGridComponent extends PositionComponent {
     final TextPaint textRenderer = TextPaint(
       style: TextStyle(color: Colors.black, fontSize: sizeX * 0.4),
     );
+    final whitePaint = Paint()..color = Colors.white;
+
 
     for (int col = 0; col < numberOfColumns; col++) {
       for (int row = 0; row < numberOfRows; row++) {
@@ -38,6 +41,9 @@ class RedGridComponent extends PositionComponent {
         if (row == 0 && col == 1 || row == 1 && col > 0) {
           color = GameState().red;
         }
+
+        bool isGoldSpot = (row == 0 && col == 1 || row == 1 && col > 0);
+
 
         String uniqueId = 'R$col$row';
 
@@ -48,7 +54,9 @@ class RedGridComponent extends PositionComponent {
             row * (sizeX + spacing),
           ),
           size: Vector2.all(sizeX),
-          paint: Paint()..color = color,
+          paint: isGoldSpot
+              ? goldGradientPaint(Offset(size.x, size.y))
+              : whitePaint,
           children: [
             RectangleComponent(
               size: Vector2.all(sizeX),

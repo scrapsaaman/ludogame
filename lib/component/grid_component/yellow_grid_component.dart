@@ -1,5 +1,6 @@
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
+import 'package:ludogame/consts.dart';
 import 'package:ludogame/state/game_state.dart';
 import '../ui_components/spot.dart'; // Replace with the actual path to your Spot component
 import '../ui_components/arrow_icon_component.dart'; // Replace with the actual path to ArrowIconComponent
@@ -27,6 +28,7 @@ class YellowGridComponent extends PositionComponent {
     double halfSizeX = sizeX / 2;
     double halfSizeY = sizeY / 2;
     double strokeWidth = sizeX * 0.025;
+    final whitePaint = Paint()..color = Colors.white;
 
     double arrowSize = sizeX * 0.50;
     Vector2 arrowPosition = Vector2(sizeX * 0.25, sizeX * 0.75);
@@ -45,6 +47,8 @@ class YellowGridComponent extends PositionComponent {
           color = GameState().yellow;
         }
 
+        bool isGoldSpot = (row == 1 && col < 5 || row == 2 && col == 4);
+
         // Create the unique ID for this block
         String uniqueId = 'Y$col$row';
 
@@ -55,7 +59,9 @@ class YellowGridComponent extends PositionComponent {
             row * (sizeY + spacing),
           ),
           size: size,
-          paint: Paint()..color = color,
+          paint: isGoldSpot
+              ? goldGradientPaint(Offset(size.x, size.y))
+              : whitePaint,
           children: [
             // Border Rectangle
             RectangleComponent(

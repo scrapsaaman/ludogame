@@ -1,5 +1,9 @@
+import 'dart:ui' as ui;
+
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
+import 'package:ludogame/component/grid_component/gold_grid_component.dart';
+import 'package:ludogame/consts.dart';
 import 'package:ludogame/state/game_state.dart';
 import 'package:ludogame/state/game_state.dart';
 // user files
@@ -37,7 +41,7 @@ class LudoBoard extends PositionComponent {
       children: [
         Home(
           size: longDimension,
-          paint: Paint()..color = GameState().red,
+          paint: goldGradientPaint(Offset(longDimension, longDimension)),
           homeSpotColor: Paint()..color = GameState().red,
         ),
       ],
@@ -61,7 +65,7 @@ class LudoBoard extends PositionComponent {
       children: [
         Home(
           size: longDimension,
-          paint: Paint()..color = GameState().green,
+          paint: goldGradientPaint(Offset(longDimension, longDimension)),
           homeSpotColor: Paint()..color = GameState().green,
         ),
       ],
@@ -97,7 +101,7 @@ class LudoBoard extends PositionComponent {
       children: [
         Home(
           size: longDimension,
-          paint: Paint()..color = GameState().blue,
+          paint: goldGradientPaint(Offset(longDimension, longDimension)),
           homeSpotColor: Paint()..color = GameState().blue,
         ),
       ],
@@ -109,7 +113,8 @@ class LudoBoard extends PositionComponent {
         longDimension + horizontalSpacing,
         longDimension + shortDimension,
       ),
-      children: [BlueGridComponent(size: shortDimension * 0.3333)],
+      // children: [BlueGridComponent(size: shortDimension * 0.3333)],
+      children: [GoldGridComponent(size: shortDimension * 0.3333)],
     );
 
     final ninthComponent = RectangleComponent(
@@ -121,7 +126,7 @@ class LudoBoard extends PositionComponent {
       children: [
         Home(
           size: longDimension,
-          paint: Paint()..color = GameState().yellow,
+          paint: goldGradientPaint(Offset(longDimension, longDimension)),
           homeSpotColor: Paint()..color = GameState().yellow,
         ),
       ],
@@ -202,25 +207,25 @@ class DiagonalRectangleComponent extends PositionComponent {
       uniqueId: 'RF',
       position: centerRedTriangle - Vector2(rectWidth / 2, rectHeight / 2),
       size: Vector2(rectWidth, rectHeight),
-      paint: Paint()..color = GameState().red,
+      paint: Paint()..color =  Colors.transparent,
     );
     yellowSpot = Spot(
       uniqueId: 'YF',
       position: centerYellowTriangle - Vector2(rectWidth / 2, rectHeight / 2),
       size: Vector2(rectWidth, rectHeight),
-      paint: Paint()..color = GameState().yellow,
+      paint: Paint()..color =  Colors.transparent,
     );
     blueSpot = Spot(
       uniqueId: 'BF',
       position: centerBlueTriangle - Vector2(rectWidth / 2, rectHeight / 2),
       size: Vector2(rectWidth, rectHeight),
-      paint: Paint()..color = GameState().blue,
+      paint: Paint()..color = Colors.transparent,
     );
     greenSpot = Spot(
       uniqueId: 'GF',
       position: centerGreenTriangle - Vector2(rectWidth / 2, rectHeight / 2),
       size: Vector2(rectWidth, rectHeight),
-      paint: Paint()..color = GameState().green,
+      paint: Paint()..color =  Colors.transparent,
     );
 
     // Add all Spot instances at once
@@ -247,8 +252,14 @@ class DiagonalRectangleComponent extends PositionComponent {
     // Define paints for filling the triangles with colors
     Paint yellowPaint = Paint()..color = GameState().yellow;
     Paint redPaint = Paint()..color = GameState().red;
-    Paint bluePaint = Paint()..color = GameState().blue;
+    Paint bluePaint = Paint()..color = Colors.pink;
     Paint greenPaint = Paint()..color = GameState().green;
+
+    final goldGradientPaint = Paint()
+      ..shader = ui.Gradient.linear(Offset(0, 0), Offset(size.x, size.y), [
+        const Color(0xFFFEEB8A), // Light gold
+        const Color(0xFFE0A100), // Darker gold
+      ]);
 
     // Define a black paint for the triangle borders
     Paint borderPaint = Paint()
@@ -257,10 +268,17 @@ class DiagonalRectangleComponent extends PositionComponent {
       ..strokeWidth = 2.6;
 
     // Draw the triangles and borders
-    _drawTriangle(canvas, redPaint, borderPaint, topLeft, center, bottomLeft);
     _drawTriangle(
       canvas,
-      yellowPaint,
+      goldGradientPaint,
+      borderPaint,
+      topLeft,
+      center,
+      bottomLeft,
+    );
+    _drawTriangle(
+      canvas,
+      goldGradientPaint,
       borderPaint,
       bottomRight,
       center,
@@ -268,13 +286,20 @@ class DiagonalRectangleComponent extends PositionComponent {
     );
     _drawTriangle(
       canvas,
-      bluePaint,
+      goldGradientPaint,
       borderPaint,
       bottomLeft,
       center,
       bottomRight,
     );
-    _drawTriangle(canvas, greenPaint, borderPaint, topRight, center, topLeft);
+    _drawTriangle(
+      canvas,
+      goldGradientPaint,
+      borderPaint,
+      topRight,
+      center,
+      topLeft,
+    );
   }
 
   void _drawTriangle(

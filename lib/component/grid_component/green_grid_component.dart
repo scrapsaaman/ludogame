@@ -1,5 +1,6 @@
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
+import 'package:ludogame/consts.dart';
 import 'package:ludogame/state/game_state.dart';
 import '../ui_components/spot.dart'; // Replace with the actual path to your Spot component
 import '../ui_components/arrow_icon_component.dart'; // Replace with the actual path to ArrowIconComponent
@@ -29,6 +30,8 @@ class GreenGridComponent extends PositionComponent {
     double arrowSize = sizeX * 0.50;
     double arrowPositionOffset = sizeX * 0.75;
 
+    final whitePaint = Paint()..color = Colors.white;
+
     // Loop to create 3 columns of 6 squares each
     for (int col = 0; col < numberOfColumns; col++) {
       for (int row = 0; row < numberOfRows; row++) {
@@ -36,6 +39,8 @@ class GreenGridComponent extends PositionComponent {
         if (row > 0 && col == 1 || row == 1 && col == 2) {
           color = GameState().green;
         }
+
+        bool isGoldSpot = (row > 0 && col == 1 || row == 1 && col == 2);
 
         // Create the unique ID for this block
         String uniqueId = 'G$col$row';
@@ -47,7 +52,9 @@ class GreenGridComponent extends PositionComponent {
             row * (sizeX + spacing),
           ),
           size: size,
-          paint: Paint()..color = color,
+          paint: isGoldSpot
+              ? goldGradientPaint(Offset(size.x, size.y))
+              : whitePaint,
           children: [
             // Border Rectangle
             RectangleComponent(
